@@ -2,6 +2,9 @@
 title: "Age at first Birth"
 output: html_notebook
 ---
+```{r git}
+use_git_config(user.name="ktemadarko",user.email="k.temadarko@gmail.com")
+```
 
 
 
@@ -46,15 +49,15 @@ ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_histogram(position =
 
 ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+scale_x_continuous(n.breaks=40)+ggtitle("A histrogram showing the distribution of age of 1st birth by urban/rural")+coord_flip()
 
+#+geom_label(stat="count",aes(label=..count..))
+```
+
+```{r age  birth vsersus urban}
 ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(11,14))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
 
 ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(15,25))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
 
-ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(26,34))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")#+geom_label(stat="count",aes(label=..count..))
-```
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
-```{r}
-
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(26,34))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
 ```
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).

@@ -16,13 +16,19 @@ idhs<-idhs[-c(1:9)]
 ```
 
 ```{r data cleaning}
-dat1<-tibble(idhs)%>%
-  select(c(10,19:60))%>%
-  filter( wkearnsmore<7)
+#dat1<-tibble(idhs)%>%
+  #select(c(10,19:60))%>%
+  #filter( wkearnsmore<7)
 
 fp<-idhs%>%
   filter(ageat1stbirth<99,resident<2,agefrstmar<99)%>%
-  select(-starts_with("rel"),-starts_with("age5"))
+  select(-starts_with("rel"),-starts_with("age5"))%>%
+  mutate(across(c(urban,resident,marstat), as_factor))
+         
+fp1<-idhs%>%
+  filter(ageat1stbirth<99,resident<2)%>%
+  select(-starts_with("rel"),-starts_with("age5"))%>%
+  mutate(across(c(urban,resident,marstat), as_factor))
 ```
 
 ```{r factor}
@@ -53,14 +59,42 @@ ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodg
 ```
 
 ```{r age  birth vsersus urban}
-ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(11,14))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
+facet=ggplot(fp1,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
 
-ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(15,25))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
+facet+facet_zoom(xlim = c(11,14))
 
-ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(26,34))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
+facet+facet_zoom(xlim = c(15,25))
+
+facet+facet_zoom(xlim = c(26,34))
 ```
+
 ```{r age_birth va age_married}
-ggplot(fp,aes(agefrstmar,ageat1stbirth))+geom_point()
+b=ggplot(fp1)+scale_x_continuous(n.breaks = 20)
+m=ggplot(fp)+scale_x_continuous(n.breaks = 20)
+
+birh=b+geom_histogram(aes(x=ageat1stbirth, fill=urban))+gghighlight(max_highlight = 5L)
+birh
+birh+facet_wrap(~urban)
+  
+m+geom_bar(aes(x=agefrstmar, fill=urban,group=urban ),position="dodge")+gghighlight( agefrstmar<19,use_direct_label = FALSE)
+
+chb=b+geom_bar(aes(x=cheb,fill=urban), position="dodge")
+#+geom_label(aes(label=cheb))
+chb+gghighlight(cheb>6,use_direct_label = FALSE)
+
+#cheb+facet_wrap(urban~.)
+
+cheba=b+geom_point(aes(x=ageat1stbirth,y=cheb,color=urban))+scale_y_continuous(n.breaks = 20)
+cheba+gghighlight(cheb>4,label_key = urban)
+cheba+facet_wrap(~urban)
+
+marbir=m+geom_point(aes(x=ageat1stbirth,y=agefrstmar,color=urban))+scale_y_continuous(n.breaks = 20)
+marbir+gghighlight(agefrstmar<19,label_key = cheb)
+marbir+gghighlight(agefrstmar<19,label_key = cheb)+facet_wrap(~urban)
+
+agebirth_cheb<-fp1%>%
+  tidycomm::crosstab(cheb,ageat1stbirth,urban)
+agebirth_cheb
 ```
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).

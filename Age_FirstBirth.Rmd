@@ -1,0 +1,62 @@
+---
+title: "Age at first Birth"
+output: html_notebook
+---
+
+
+
+```{r load data}
+#library(haven, tidyverse,tidylog,ggforce,ggpubr,scales)
+idhs <- read_dta("idhs_00006.dta/idhs_00006.dta")
+idhs<-idhs[-c(1:9)]
+
+```
+
+```{r data cleaning}
+dat1<-tibble(idhs)%>%
+  select(c(10,19:60))%>%
+  filter( wkearnsmore<7)
+
+fp<-idhs%>%
+  filter(ageat1stbirth<99,resident<2)%>%
+  select(-starts_with("rel"),-starts_with("age5"))
+```
+
+```{r factor}
+fp=fp%>%
+  mutate(across(c(urban,resident,marstat), as_factor))
+```
+
+```{r boxplot}
+ggplot(fp,aes(ageat1stbirth))+geom_histogram(color="white")+scale_x_continuous(n.breaks=35)+ggtitle("A histogram showing the distribution of age of 1st birth")
+p=ggplot(fp,aes(ageat1stbirth,fill=urban))+geom_histogram(color="grey")+scale_x_continuous(n.breaks=12)+ggtitle("A histogram showing the distribution of age of 1st birth")+facet_wrap(~urban)
+p
+#p+geom_density(alpha=0.2, fill="#aabbcc")
+
+
+ggplot(fp,aes(urban,ageat1stbirth,fill=urban))+geom_boxplot()+ggtitle("A boxplot showing the distribution of age of 1st birth by urban/rural")
+
+ggplot(fp,aes(x=ageat1stbirth,fill=urban))+geom_histogram(color="grey")+scale_x_continuous(n.breaks=40)+ggtitle("A boxplot showing the distribution of age of 1st birth by urban/rural")
+
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_histogram(position = "dodge")+scale_x_continuous(n.breaks=40)+ggtitle("A histrogram showing the distribution of age of 1st birth by urban/rural")
+
+ggplot(fp,aes(x=as_factor(ageat1stbirth),color=urban,fill=urban))+geom_bar(position = "identity",color="grey")+facet_wrap(ageat1stbirth~.,scales="free")+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
+
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_histogram(position = "identity",color="grey")+scale_x_continuous(n.breaks=40)+ggtitle("A histrogram showing the distribution of age of 1st birth by urban/rural")
+
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+scale_x_continuous(n.breaks=40)+ggtitle("A histrogram showing the distribution of age of 1st birth by urban/rural")+coord_flip()
+
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(11,14))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
+
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(15,25))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
+
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+facet_zoom(xlim = c(26,34))+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")#+geom_label(stat="count",aes(label=..count..))
+```
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+```{r}
+
+```
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

@@ -21,14 +21,24 @@ idhs<-idhs[-c(1:9)]
   #filter( wkearnsmore<7)
 
 fp<-idhs%>%
-  filter(ageat1stbirth<99,resident<2,agefrstmar<99)%>%
+  filter(ageat1stbirth<99,resident<2,agefrstmar<99,currwork<98,wkmaternity<99,
+         wkearnsmore<9)%>%
   select(-starts_with("rel"),-starts_with("age5"))%>%
-  mutate(across(c(urban,resident,marstat), as_factor))
+  mutate(across(c(urban,resident,marstat,currwork, wkmaternity,wkearnsmore), as_factor))
          
 fp1<-idhs%>%
-  filter(ageat1stbirth<99,resident<2)%>%
+  filter(ageat1stbirth<99,resident<2,currwork<98)%>%
   select(-starts_with("rel"),-starts_with("age5"))%>%
-  mutate(across(c(urban,resident,marstat), as_factor))
+  mutate(across(c(urban,resident,marstat,currwork), as_factor))
+
+fp2<-idhs%>%
+  filter(ageat1stbirth<99,resident<2,agefrstmar<99,currwork<98)%>%
+  select(-starts_with("rel"),-starts_with("age5"))%>%
+  mutate(across(c(urban,resident,marstat,currwork, wkmaternity,wkearnsmore), as_factor,wealthq))%>%
+  mutate(across(c(urban,resident,marstat,currwork, wkmaternity,wkearnsmore), droplevels))
+
+fp$early_mar=cut(fp$agefrstmar,breaks=c(-Inf,19,Inf), labels=c("married before 19","married after 19"))
+fp2$early_mar=cut(fp2$agefrstmar,breaks=c(-Inf,19,Inf), labels=c("married before 19","married after 19"))
 ```
 
 ```{r factor}
@@ -37,29 +47,35 @@ fp=fp%>%
 ```
 
 ```{r boxplot}
-ggplot(fp,aes(ageat1stbirth))+geom_histogram(color="white")+scale_x_continuous(n.breaks=35)+ggtitle("A histogram showing the distribution of age of 1st birth")
-p=ggplot(fp,aes(ageat1stbirth,fill=urban))+geom_histogram(color="grey")+scale_x_continuous(n.breaks=12)+ggtitle("A histogram showing the distribution of age of 1st birth")+facet_wrap(~urban)
-p
+ggplot(fp,aes(ageat1stbirth))+geom_histogram(colour="white")+scale_x_continuous(n.breaks=35)+ggtitle("A histogram showing the distribution of age of 1st birth")
+
+p=ggplot(fp,aes(fill=urban))+coord_flip()
+
+#p+geom_histogram(color="grey")+scale_x_continuous(n.breaks=12)+ggtitle("A histogram showing the distribution of age of 1st birth")+facet_grid(urban~early_mar)+scale_x_continuous(breaks=pretty_breaks())
 #p+geom_density(alpha=0.2, fill="#aabbcc")
 
 
-ggplot(fp,aes(urban,ageat1stbirth,fill=urban))+geom_boxplot()+ggtitle("A boxplot showing the distribution of age of 1st birth by urban/rural")
+#p+geom_boxplot(aes(x=ageat1stbirth))+ggtitle("A boxplot showing the distribution of age of 1st birth by urban/rural")+facet_wrap(~urban)
+
+#p+geom_boxplot(aes(x=ageat1stbirth))+ggtitle("A boxplot showing the distribution of age of 1st birth by urban/rural")+facet_wrap(~early_mar)
 
 ggplot(fp,aes(x=ageat1stbirth,fill=urban))+geom_histogram(color="grey")+scale_x_continuous(n.breaks=40)+ggtitle("A boxplot showing the distribution of age of 1st birth by urban/rural")
 
-ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_histogram(position = "dodge")+scale_x_continuous(n.breaks=40)+ggtitle("A histrogram showing the distribution of age of 1st birth by urban/rural")
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_histogram(position = "dodge")+scale_x_continuous(n.breaks=40)+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
 
-ggplot(fp,aes(x=as_factor(ageat1stbirth),color=urban,fill=urban))+geom_bar(position = "identity",color="grey")+facet_wrap(ageat1stbirth~.,scales="free")+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
 
-ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_histogram(position = "identity",color="grey")+scale_x_continuous(n.breaks=40)+ggtitle("A histrogram showing the distribution of age of 1st birth by urban/rural")
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_histogram(position = "identity",color="grey")+scale_x_continuous(n.breaks=40)+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
 
-ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+scale_x_continuous(n.breaks=40)+ggtitle("A histrogram showing the distribution of age of 1st birth by urban/rural")+coord_flip()
+ggplot(fp,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+scale_x_continuous(n.breaks=40)+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")+coord_flip()
 
 #+geom_label(stat="count",aes(label=..count..))
 ```
 
-```{r age  birth vsersus urban}
+```{r age  birth versus urban}
 facet=ggplot(fp1,aes(x=ageat1stbirth,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st birth by urban/rural")
+
+mar=ggplot(fp,aes(x=agefrstmar,color=urban,fill=urban))+geom_bar(position = "dodge",color="grey")+scale_x_continuous(breaks=pretty_breaks())+ggtitle("A histogram showing the distribution of age of 1st marriage by urban/rural")
+mar+gghighlight( ageat1stbirth<19,use_direct_label = FALSE)+facet_zoom(xlim = c(10,20))
 
 facet+facet_zoom(xlim = c(11,14))
 
@@ -67,36 +83,122 @@ facet+facet_zoom(xlim = c(15,25))
 
 facet+facet_zoom(xlim = c(26,34))
 ```
-
-```{r age_birth va age_married}
+```{r ggplot setup}
 b=ggplot(fp1)+scale_x_continuous(n.breaks = 20)
 m=ggplot(fp)+scale_x_continuous(n.breaks = 20)
+c=ggplot(fp2)+scale_x_continuous(n.breaks = 20)
+emb=ggplot(marbir19)+scale_x_continuous(n.breaks = 20)
+```
 
-birh=b+geom_histogram(aes(x=ageat1stbirth, fill=urban))+gghighlight(max_highlight = 5L)
-birh
-birh+facet_wrap(~urban)
-  
-m+geom_bar(aes(x=agefrstmar, fill=urban,group=urban ),position="dodge")+gghighlight( agefrstmar<19,use_direct_label = FALSE)
+```{r age_birth va age_married, include=FALSE}
+#showing under 19 years at first birth
+#age=b+geom_bar(aes(x=ageat1stbirth ))+scale_y_continuous(n.breaks = 10)
+age+gghighlight( ageat1stbirth<19,use_direct_label =FALSE)+facet_wrap(~urban,scales="free",nrow=2)
 
-chb=b+geom_bar(aes(x=cheb,fill=urban), position="dodge")
-#+geom_label(aes(label=cheb))
-chb+gghighlight(cheb>6,use_direct_label = FALSE)
+#showing under 19 years at first birth
+m+geom_bar(aes(x=agefrstmar, fill=urban ))+gghighlight( ageat1stbirth<19,use_direct_label = FALSE)+facet_wrap(~urban,nrow=2, scales="free")
 
+b+geom_bar(aes(x=ageat1stbirth))+gghighlight( cheb>5,use_direct_label = FALSE)
+chb+gghighlight(cheb>5,use_direct_label = FALSE)+facet_wrap(~urban,scales="free")
+```
+
+```{r computation dpylr}
+a=fp2%>%select(ageat1stbirth)%>%
+  count(ageat1stbirth<19)%>%
+  mutate(round((n/5897)*100))#%>%
+a
+t1=as.character(a[2,3])
+
+curwk=fp2%>%select(currwork)%>%
+  count(currwork=="no")%>%
+  mutate(round((n/5897)*100))#%>%
+curwk
+
+emar=fp2%>%select(agefrstmar)%>%
+  count(ageat1stbirth<19)%>%
+  mutate(round((n/5897)*100))#%>%
+emar
+
+marbir19<-idhs%>%
+  filter(ageat1stbirth<19,agefrstmar<19)%>%
+  mutate(across(c(currwork),as_factor))
+
+curwk1=marbir19%>%select(currwork)%>%
+  count(currwork=="no")%>%
+  mutate(round((n/5897)*100))#%>%
+curwk1
+
+```
+
+```{r plots}
+mar=c+geom_bar(aes(x=agefrstmar))
+
+ab=gghighlight( ageat1stbirth<19,use_direct_label = FALSE)#+
+ab1=ggtitle(paste("highlight birth <=18 percent of total",t1,"%"))
+
+crw=gghighlight( currwork=="no",use_direct_label = FALSE)
+crw1=ggtitle(paste("highlight not currently working n=",curwk[2,3],"%"))
+em=gghighlight( agefrstmar<19,use_direct_label = FALSE)
+em1=ggtitle(paste("highlight married before 19 n=",emar[2,3],"%"))
+
+mar+ab+ab1
+#mar+crw+crw1
+mar+em+em1
+#em2=em+em1
+#+facet_wrap(~urban,nrow=2, scales="free")
+
+#showing under 19 years at first marriage
+
+#showing more than 6 children
+chbg=geom_bar(aes(x=cheb))
+chb=c+chbg+scale_y_continuous(n.breaks = 10)
+chb+gghighlight(max(cheb))
+
+c+geom_bar(aes(x=cheb,fill=urban), position="dodge")+scale_y_continuous(n.breaks = 10)
+
+c_dodge=c+geom_bar(aes(x=cheb), position="dodge")
+c_dodge+ab+ab1
+c_dodge+em+em1
+#c_dodge+crw+crw1
+
+#emb1=emb+chbg+crw+crw1
+##emb1
+
+#emb+chbg+em
 #cheb+facet_wrap(urban~.)
+```
 
-cheba=b+geom_point(aes(x=ageat1stbirth,y=cheb,color=urban))+scale_y_continuous(n.breaks = 20)
-cheba+gghighlight(cheb>4,label_key = urban)
+```{r}
+cheba=c+geom_col(aes(x=ageat1stbirth,y=cheb))+scale_y_continuous(n.breaks = 20)+coord_flip()
+c+geom_col(aes(x=ageat1stbirth,y=cheb))+scale_y_continuous(n.breaks = 20)+gghighlight(cheb>5)
+
+cheba+gghighlight(cheb>5) #does not show relevance geom_point
+
+#c+geom_point(aes(y=ageat1stbirth,x=cheb))+scale_y_continuous(n.breaks = 20)+gghighlight(agefrstmar<19)
+c+geom_col(aes(y=ageat1stbirth,x=cheb))+scale_y_continuous(n.breaks = 20)+gghighlight(agefrstmar<19)
+
+cheba+gghighlight(agefrstmar<19)
+#cheba+gghighlight(cheb>5,label_key = agefrstmar)
+cheba+gghighlight(ageat1stbirth<19)
+cheba+gghighlight(currwork=="no")
 cheba+facet_wrap(~urban)
 
-marbir=m+geom_point(aes(x=ageat1stbirth,y=agefrstmar,color=urban))+scale_y_continuous(n.breaks = 20)
-marbir+gghighlight(agefrstmar<19,label_key = cheb)
-marbir+gghighlight(agefrstmar<19,label_key = cheb)+facet_wrap(~urban)
+#marbir=m+geom_col(aes(x=ageat1stbirth,y=agefrstmar))+scale_y_continuous(n.breaks = 20)
+#marbir+gghighlight(agefrstmar<19)
+cheba+gghighlight(agefrstmar<19)+facet_wrap(~urban)
 
 agebirth_cheb<-fp1%>%
   tidycomm::crosstab(cheb,ageat1stbirth,urban)
 agebirth_cheb
 ```
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```{r tests}
+fp2 %>%
+  crosstab(urban,early_mar)
+
+fp2 %>%
+  crosstab(urban,early_mar,wealthq)
+```
+
+

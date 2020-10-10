@@ -2,13 +2,17 @@
 title: " "
 output: html_notebook
 ---
+
 ```{r git, include=FALSE}
 use_git_config(user.name="ktemadarko",user.email="k.temadarko@gmail.com")
 ```
 
 ### Factors associated with early birth
+
 #### Using data from DHS Ghana 2014
+
 #### By Korantema Darko
+
 ```{r load data, include=FALSE}
 #library(haven, tidyverse,tidylog,ggforce,ggpubr,scales)
 idhs <- read_dta("idhs_00006.dta/idhs_00006.dta")
@@ -49,8 +53,6 @@ fp2$early_bir=cut(fp2$ageat1stbirth,breaks=c(-Inf,19,Inf), labels=c("birth befor
 ```{r Table1, echo=FALSE}
 table1(~age+early_mar+lit2+educlvl+edyrtotal|early_bir,droplevels=T, data=fp2)
 ```
-
-
 
 ```{r boxplot, echo=FALSE}
 ggplot(fp2,aes(ageat1stbirth))+geom_histogram(colour="white")+scale_x_continuous(n.breaks=35)+ggtitle("A histogram showing the distribution of age of 1st birth")+
@@ -200,7 +202,6 @@ agebirth_cheb<-fp1%>%
 agebirth_cheb
 ```
 
-
 ```{r tests, include=FALSE}
 fp2 %>%
   tidycomm::crosstab(urban,early_mar, add_total = TRUE)
@@ -231,9 +232,8 @@ fp2%>%group_by(early_bir)%>%count(early_mar)
 
 
 ```
-Ho=The relationship between early birth and early marriage is independent
-HA=The relationship between early birth and early marriage is dependent
-since p<0.05 reject the Ho, they are dependent
+
+Ho=The relationship between early birth and early marriage is independent HA=The relationship between early birth and early marriage is dependent since p\<0.05 reject the Ho, they are dependent
 
 ```{r association, include=FALSE}
 t1<-fp2%>%
@@ -347,8 +347,4 @@ t5
 t2
 ```
 
-
-
-```
-
-
+\`\`\`

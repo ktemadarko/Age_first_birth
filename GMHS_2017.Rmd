@@ -1,0 +1,49 @@
+---
+title: "Women GMHS 2017"
+author: "Ama Korantema Owusu-Darko"
+date: "10/10/2020"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Age at First Birth /Birth before age 19
+
+The goal of this research is to identify factors the are associated with a women giving birth to a child before age 19.
+
+```{r setup  data, echo=FALSE}
+knitr::opts_chunk$set(include = FALSE, warning = FALSE)
+
+++++++++++++++library(haven)
+library(broom)
+library(janitor)
+library(ggforce)
+library(table1)
+library(vcd)
+library(mosaic)
+library(epitools)
+library(epitools)
+library(ggmap)
+library(gghighlight)
+library(ggformula)
+library(ggsci)
+library(ggridges)
+library(ggrepel)
+library(tidycomm)
+
+library(scales)
+library(ggpubr)
+library(magrittr)
+library(tidylog)
+library(tidyverse)
+```
+
+```{r read data, include=FALSE, paged.print=TRUE,echo=FALSE}
+women <- read_dta("GHIQ7JDT/GHIQ7JFL.dta")
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -1,0 +1,85 @@
+Factors associated with early birth using data from DHS Ghana 2014
+========================================================
+author: Korantema Darko
+date: 
+autosize: true
+
+Table 1
+========================================================
+
+```{r load data, message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
+library(haven)
+library(broom)
+library(janitor)
+library(ggforce)
+library(table1)
+library(vcd)
+library(mosaic)
+library(epitools)
+library(epitools)
+library(ggmap)
+library(gghighlight)
+library(ggformula)
+library(ggsci)
+library(ggridges)
+library(ggrepel)
+library(tidycomm)
+library(tidylog)
+library(tidyverse)
+library(scales)
+library(ggpubr)
+library(magrittr)
+idhs <- read_dta("idhs_00006.dta/idhs_00006.dta")
+idhs<-idhs[-c(1:9)]
+
+```
+
+```{r data cleaning, include=FALSE}
+#dat1<-tibble(idhs)%>%
+  #select(c(10,19:60))%>%
+  #filter( wkearnsmore<7)
+
+#fp<-idhs%>%
+  filter(ageat1stbirth<99,resident<2,agefrstmar<99,currwork<98,wkmaternity<99,
+         wkearnsmore<9)%>%
+  select(-starts_with("rel"),-starts_with("age5"))%>%
+  mutate(across(c(urban,resident,marstat,currwork, wkmaternity,wkearnsmore), as_factor))
+         
+#fp1<-idhs%>%
+  filter(ageat1stbirth<99,resident<2,currwork<98)%>%
+  select(-starts_with("rel"),-starts_with("age5"))%>%
+  mutate(across(c(urban,resident,marstat,currwork), as_factor))
+
+fp2<-idhs%>%
+  filter(ageat1stbirth<99,resident<2,agefrstmar<99,lit2<98)%>%
+  select(-starts_with("rel"),-starts_with("age5"))%>%
+  mutate(across(c(urban,resident,marstat,currwork, wkmaternity,wkearnsmore,wealthq,31:34,36:83), as_factor))%>%
+  mutate(across(c(urban,resident,marstat,currwork, wkmaternity,wkearnsmore,wealthq,31:34, 36:83,lit2,educlvl,decbighh), droplevels))
+#%>%
+  #add_column(cut(fp2$agefrstmar,breaks=c(-Inf,19,Inf), labels=c("married before 19","married after 19")),.after="agefrstmar")
+
+
+fp2$early_mar=cut(fp2$agefrstmar,breaks=c(-Inf,19,Inf), labels=c("married before 19","married after 19"))
+
+fp2$early_bir=cut(fp2$ageat1stbirth,breaks=c(-Inf,19,Inf), labels=c("birth before 19","birth after 19"))
+```
+
+```{r Table1, message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
+as=table1::table1(~age+early_mar+lit2+educlvl+edyrtotal|early_bir,droplevels=T, data=fp2)
+as
+```
+
+
+Slide With Code
+========================================================
+
+```{r}
+summary(cars)
+```
+
+Slide With Plot
+========================================================
+
+```{r, echo=FALSE}
+plot(cars)
+```

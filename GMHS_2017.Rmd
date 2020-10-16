@@ -17,7 +17,7 @@ The goal of this research is to identify factors the are associated with a women
 ```{r setup  data, echo=FALSE}
 knitr::opts_chunk$set(include = FALSE, warning = FALSE)
 
-++++++++++++++library(haven)
+library(haven)
 library(broom)
 library(janitor)
 library(ggforce)
@@ -41,9 +41,25 @@ library(tidylog)
 library(tidyverse)
 ```
 
-```{r read data, include=FALSE, paged.print=TRUE,echo=FALSE}
-women <- read_dta("GHIQ7JDT/GHIQ7JFL.dta")
+```{r load data, include=FALSE, paged.print=TRUE,echo=FALSE}
+women <- read_dta("idhs.dta")
+
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r read data, include=FALSE, paged.print=TRUE,echo=FALSE}
+fp2<-women%>%
+  filter(ageat1stbirth<99,resident<2,agefrstmar<99,lit2<98)%>%
+  select(-starts_with("age5"))%>%
+  mutate(across(c(urban,resident,marstat,currwork, wkmaternity,wkearnsmore,wealthq,lit2,educlvl,37:50), as_factor))%>%
+  mutate(across(c(urban,resident,marstat,currwork, wkmaternity,wkearnsmore,wealthq,lit2,educlvl,37:50), droplevels))
+
+fp2$early_mar=cut(fp2$agefrstmar,breaks=c(-Inf,19,Inf), labels=c("married before 19","married after 19"))
+
+fp2$early_bir=cut(fp2$ageat1stbirth,breaks=c(-Inf,19,Inf), labels=c("birth before 19","birth after 19"))
+
+```
+
+```{r Table1, echo=FALSE}
+table1(~age+early_mar+lit2+educlvl+edyrtotal|early_bir,droplevels=T, data=fp2)
+```
